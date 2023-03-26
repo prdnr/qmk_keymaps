@@ -1,7 +1,10 @@
 #include <nyquist/rev3/rev3.h> /* QMK_KEYBOARD_H caused problems with clangd */
 
 /* Layer declarations. */
-enum layer_names { _QWERTY,_ARROWS, _QMK, _NUMPAD, _MOUSE, _FN };
+enum layer_names { _QWERTY, _ARROWS, _QMK, _NUMPAD, _MOUSE, _FN, _GAMING, _GAMING_MOUSE };
+
+/* Combo declarations. */
+enum combos { QA, WS, ED, RF, TG, YH, UJ, IK, OL, PSEMICOLON, ENTERBACKSPACE, SEMICOLONENTER, PBACKSPACE, SLASHSHIFT, OP, LGUILCONTROL, SPACERCONTROL, DF, FG, HJ, JK, KM, BTNONEBTNTWO, WHEELUPWHEELDOWN, RECONERSTPPLYONE, DOWNUPRIGHT };
 
 /* Combo Presses. */
 /* Top Row*/
@@ -35,43 +38,63 @@ const uint16_t PROGMEM hj_combo[] = {KC_H, KC_J, COMBO_END};
 const uint16_t PROGMEM jk_combo[] = {KC_J, KC_K, COMBO_END};
 
 /* Mouse */
-const uint16_t PROGMEM km_combo[]           = {KC_K, KC_M, COMBO_END};
-const uint16_t PROGMEM btnonebtntwo_combo[] = {KC_MS_BTN1, KC_MS_BTN2, COMBO_END};
+const uint16_t PROGMEM km_combo[]               = {KC_K, KC_M, COMBO_END};
+const uint16_t PROGMEM btnonebtntwo_combo[]     = {KC_MS_BTN1, KC_MS_BTN2, COMBO_END};
+const uint16_t PROGMEM wheelupwheeldown_combo[] = {KC_WH_U, KC_WH_D, COMBO_END};
 
 /* Arrow keys. */
-const uint16_t PROGMEM reconerstpplyone_combo [] = {DM_REC1, DM_RSTP, DM_PLY1, COMBO_END};
-const uint16_t PROGMEM downupright_combo [] = {KC_UP, KC_DOWN, KC_RIGHT, COMBO_END};
+const uint16_t PROGMEM reconerstpplyone_combo[] = {DM_REC1, DM_RSTP, DM_PLY1, COMBO_END};
+const uint16_t PROGMEM downupright_combo[]      = {KC_UP, KC_DOWN, KC_RIGHT, COMBO_END};
 
 /* Combo Results.*/
 /* clang-format off */
 combo_t key_combos[COMBO_COUNT] = {
-    COMBO(qa_combo, KC_1),
-    COMBO(ws_combo, KC_2),
-    COMBO(ed_combo, KC_3),
-    COMBO(rf_combo, KC_4),
-    COMBO(tg_combo, KC_5),
-    COMBO(yh_combo, KC_6),
-    COMBO(uj_combo, KC_7),
-    COMBO(ik_combo, KC_8),
-    COMBO(ol_combo, KC_9),
-    COMBO(psemicolon_combo, KC_0),
-    COMBO(enterbackspace_combo, KC_DEL),
-    COMBO(semicolonenter_combo, KC_QUOTE),
-    COMBO(pbackspace_combo, KC_MINUS),
-    COMBO(slashshift_combo, KC_EQUAL),
-    COMBO(op_combo, KC_BACKSLASH),
-    COMBO(lguilcontrol_combo, KC_SPACE),
-    COMBO(spacercontrol_combo, KC_RALT),
-    COMBO(df_combo, KC_LEFT_BRACKET),
-    COMBO(fg_combo, KC_LEFT_PAREN),
-    COMBO(hj_combo, KC_RIGHT_PAREN),
-    COMBO(jk_combo, KC_RIGHT_BRACKET),
-    COMBO(km_combo, TG(_MOUSE)),
-    COMBO(btnonebtntwo_combo, KC_MS_BTN3),
-    COMBO(reconerstpplyone_combo, TG(_ARROWS)),
-    COMBO(downupright_combo, TG(_ARROWS))
+    [QA] = COMBO(qa_combo, KC_1),
+    [WS] = COMBO(ws_combo, KC_2),
+    [ED] = COMBO(ed_combo, KC_3),
+    [RF] = COMBO(rf_combo, KC_4),
+    [TG] = COMBO(tg_combo, KC_5),
+    [YH] = COMBO(yh_combo, KC_6),
+    [UJ] = COMBO(uj_combo, KC_7),
+    [IK] = COMBO(ik_combo, KC_8),
+    [OL] = COMBO(ol_combo, KC_9),
+    [PSEMICOLON] = COMBO(psemicolon_combo, KC_0),
+    [ENTERBACKSPACE] = COMBO(enterbackspace_combo, KC_DEL),
+    [SEMICOLONENTER] = COMBO(semicolonenter_combo, KC_QUOTE),
+    [PBACKSPACE] = COMBO(pbackspace_combo, KC_MINUS),
+    [SLASHSHIFT] = COMBO(slashshift_combo, KC_EQUAL),
+    [OP] = COMBO(op_combo, KC_BACKSLASH),
+    [LGUILCONTROL] = COMBO(lguilcontrol_combo, KC_SPACE),
+    [SPACERCONTROL] = COMBO(spacercontrol_combo, KC_RALT),
+    [DF] = COMBO(df_combo, KC_LEFT_BRACKET),
+    [FG] = COMBO(fg_combo, KC_LEFT_PAREN),
+    [HJ] = COMBO(hj_combo, KC_RIGHT_PAREN),
+    [JK] = COMBO(jk_combo, KC_RIGHT_BRACKET),
+    [KM] = COMBO(km_combo, TG(_MOUSE)),
+    [BTNONEBTNTWO] = COMBO(btnonebtntwo_combo, KC_MS_BTN3),
+    [WHEELUPWHEELDOWN] = COMBO(wheelupwheeldown_combo, KC_MS_BTN3),
+    [RECONERSTPPLYONE] =COMBO(reconerstpplyone_combo, TG(_ARROWS)),
+    [DOWNUPRIGHT] = COMBO(downupright_combo, TG(_ARROWS))
 };
 /* clang-format on */
+
+/* Decide when to squash combos. */
+bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode, keyrecord_t *record) {
+    /* Simplify combo selection when in _GAMING layer. */
+    if (IS_LAYER_ON(_GAMING)) {
+        switch (combo_index) {
+            case KM: /* No entry to _MOUSE. */
+            case DF: /* No quick parens. */
+            case FG:
+            case HJ:
+            case JK:
+            case BTNONEBTNTWO: /* No quick KC_MS_BTN3. */
+                return false;
+        }
+    }
+
+    return true;
+}
 
 /* Tap Dance declarations. */
 enum { TD_ESC_TAB, TD_NUMPAD_QMK };
@@ -114,7 +137,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_QMK] = LAYOUT_ortho_4x12(
         KC_SLEP, KC_BRID, KC_BRIU, KC_KB_MUTE, KC_KB_VOLUME_DOWN, KC_KB_VOLUME_UP, /*split*/ _______, _______, _______, _______, _______, _______,
-        TG(_QMK), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, /*split*/ _______, _______, _______, _______, _______, _______,
+        TG(_QMK), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, TO(_GAMING), /*split*/ _______, _______, _______, _______, _______, _______,
         AS_TOGG, XXXXXXX, RGB_TOG, XXXXXXX, XXXXXXX, XXXXXXX, /*split*/ _______, _______, _______, _______, _______, _______,
         DM_PLY1, DM_PLY2 , DM_RSTP, DM_REC1, DM_REC2, XXXXXXX, /*split*/ _______, _______, _______, _______, _______, _______),
 
@@ -134,7 +157,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, /*split*/ KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12,
         _______, _______, _______, _______, _______, _______, /*split*/ _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______, /*split*/ _______, _______, _______, _______, _______, _______,
-        _______, TG(_FN), _______, _______, _______, _______, /*split*/ _______, _______, _______, _______, _______, _______)
+        _______, TG(_FN), _______, _______, _______, _______, /*split*/ _______, _______, _______, _______, _______, _______),
+
+    [_GAMING] = LAYOUT_ortho_4x12(
+        KC_ESC, _______, _______, _______, _______, _______, /*split*/ _______, _______, _______, _______, _______, _______,
+        KC_TAB, _______, _______, _______, _______, _______, /*split*/ _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, /*split*/ _______, _______, _______, _______, _______, _______,
+        TG(_GAMING), _______, _______, KC_RALT, KC_LCTL, KC_SPC, /*split*/ _______, _______, XXXXXXX, XXXXXXX, XXXXXXX, TG(_GAMING_MOUSE)),
+
+    [_GAMING_MOUSE] = LAYOUT_ortho_4x12(
+        _______, _______, _______, _______, _______, _______, /*split*/ _______, KC_WH_U, KC_MS_U, KC_WH_D, _______, _______,
+        _______, _______, _______, _______, _______, _______, /*split*/ _______, KC_MS_L, KC_MS_D, KC_MS_R, _______, _______,
+        _______, _______, _______, _______, _______, _______, /*split*/ _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______, _______, /*split*/ KC_MS_BTN1, KC_MS_BTN2, KC_MS_BTN3, _______, _______, TG(_GAMING_MOUSE))
 
     // [_EMPTY] = LAYOUT_ortho_4x12(
     //     _______, _______, _______, _______, _______, _______, /*split*/ _______, _______, _______, _______, _______, _______,
@@ -147,16 +182,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 /* Light layers for keymap layer indication. */
-const rgblight_segment_t PROGMEM _QWERTY_LIGHTS[] = RGBLIGHT_LAYER_SEGMENTS({0, 6, HSV_WHITE}, /* split */ {6, 6, HSV_WHITE});
-const rgblight_segment_t PROGMEM _ARROW_LIGHTS[]   = RGBLIGHT_LAYER_SEGMENTS({7, 2, HSV_CORAL});
-const rgblight_segment_t PROGMEM _CAPS_LIGHTS[]   = RGBLIGHT_LAYER_SEGMENTS({0, 6, HSV_RED}, /* split */ {6, 6, HSV_RED});
-const rgblight_segment_t PROGMEM _MOUSE_LIGHTS[]  = RGBLIGHT_LAYER_SEGMENTS({6, 6, HSV_CYAN});
-const rgblight_segment_t PROGMEM _NUMPAD_LIGHTS[] = RGBLIGHT_LAYER_SEGMENTS({6, 6, HSV_MAGENTA});
-const rgblight_segment_t PROGMEM _QMK_LIGHTS[]    = RGBLIGHT_LAYER_SEGMENTS({0, 6, HSV_YELLOW});
-const rgblight_segment_t PROGMEM _FN_LIGHTS[]     = RGBLIGHT_LAYER_SEGMENTS({0, 6, HSV_GREEN}, /* split */ {6, 6, HSV_GREEN});
+const rgblight_segment_t PROGMEM _QWERTY_LIGHTS[]       = RGBLIGHT_LAYER_SEGMENTS({0, 6, HSV_WHITE}, /* split */ {6, 6, HSV_WHITE});
+const rgblight_segment_t PROGMEM _ARROW_LIGHTS[]        = RGBLIGHT_LAYER_SEGMENTS({7, 2, HSV_CORAL});
+const rgblight_segment_t PROGMEM _CAPS_LIGHTS[]         = RGBLIGHT_LAYER_SEGMENTS({0, 6, HSV_RED}, /* split */ {6, 6, HSV_RED});
+const rgblight_segment_t PROGMEM _MOUSE_LIGHTS[]        = RGBLIGHT_LAYER_SEGMENTS({6, 6, HSV_CYAN});
+const rgblight_segment_t PROGMEM _NUMPAD_LIGHTS[]       = RGBLIGHT_LAYER_SEGMENTS({6, 6, HSV_MAGENTA});
+const rgblight_segment_t PROGMEM _QMK_LIGHTS[]          = RGBLIGHT_LAYER_SEGMENTS({0, 6, HSV_YELLOW});
+const rgblight_segment_t PROGMEM _FN_LIGHTS[]           = RGBLIGHT_LAYER_SEGMENTS({0, 6, HSV_GREEN}, /* split */ {6, 6, HSV_GREEN});
+const rgblight_segment_t PROGMEM _GAMING_LIGHTS[]       = RGBLIGHT_LAYER_SEGMENTS({0, 6, HSV_ORANGE}, /* split */ {6, 6, HSV_ORANGE});
+const rgblight_segment_t PROGMEM _GAMING_MOUSE_LIGHTS[] = RGBLIGHT_LAYER_SEGMENTS({6, 6, HSV_CHARTREUSE});
 
 /* RGB layers. */
-const rgblight_segment_t *const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(_QWERTY_LIGHTS, _ARROW_LIGHTS, _CAPS_LIGHTS, _MOUSE_LIGHTS, _NUMPAD_LIGHTS, _QMK_LIGHTS, _FN_LIGHTS);
+const rgblight_segment_t *const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(_QWERTY_LIGHTS, _ARROW_LIGHTS, _CAPS_LIGHTS, _MOUSE_LIGHTS, _NUMPAD_LIGHTS, _QMK_LIGHTS, _FN_LIGHTS, _GAMING_LIGHTS, _GAMING_MOUSE_LIGHTS);
 
 /* Turn on capslock rgblight layer when capslock is on. */
 bool led_update_user(led_t led_state) {
@@ -169,8 +206,12 @@ void caps_word_set_user(bool active) {
     rgblight_set_layer_state(2, active);
 }
 
-/* Turn on rgblight layers when keymap layers turn on. */
+/* Stores autoshift state outside of _GAME. */
+bool desire_autoshift = true;
+
+/* Act when layer state changes. */
 layer_state_t layer_state_set_user(layer_state_t state) {
+    /* Turn on rgblight layers when keymap layers turn on. */
     rgblight_set_layer_state(0, true); /* Always apply bottom layer. */
     rgblight_set_layer_state(1, layer_state_cmp(state, _ARROWS));
     /* The next layer is _CAPS_LIGHTS, which isn't tied to a keymap layer. */
@@ -178,13 +219,23 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     rgblight_set_layer_state(4, layer_state_cmp(state, _NUMPAD));
     rgblight_set_layer_state(5, layer_state_cmp(state, _QMK));
     rgblight_set_layer_state(6, layer_state_cmp(state, _FN));
+    rgblight_set_layer_state(7, layer_state_cmp(state, _GAMING));
+    rgblight_set_layer_state(8, layer_state_cmp(state, _GAMING_MOUSE));
+
+    /* Turn off autoshift in _GAMING. */
+    if (layer_state_cmp(state, _GAMING)) autoshift_disable();
+    /* Turn on autoshift when we return to base layer.
+       (Ideally this would be when we exit _GAME) */
+    if ((get_highest_layer(state) == _QWERTY) && desire_autoshift) autoshift_enable();
     return state;
 }
 
 /* Setup after the keyboard has been initalized. */
 void keyboard_post_init_user(void) {
-    // Enable the LED layers
+    /* Enable the LED layers. */
     rgblight_layers = my_rgb_layers;
+    /* Default to having autoshift on. */
+    autoshift_enable();
 }
 
 /* Time before _LAYER deactives after last input. */
@@ -193,8 +244,7 @@ void keyboard_post_init_user(void) {
 #define QMK_LAYER_TIMEOUT 5000
 
 /* Run when the keyboard scans the matrix.
- * Use minimally, as it runs pretty much constantly.
- */
+   Use minimally, as it runs pretty much constantly. */
 void matrix_scan_user(void) {
     /* Allow highest layers to time out after going X milliseconds since last input */
     switch (get_highest_layer(layer_state)) {
@@ -208,4 +258,16 @@ void matrix_scan_user(void) {
             if (last_input_activity_elapsed() > QMK_LAYER_TIMEOUT) layer_off(_QMK);
             break;
     }
+
+    /* Clean up when turning _GAMING off. */
+    if (IS_LAYER_OFF(_GAMING) && IS_LAYER_ON(_GAMING_MOUSE)) layer_off(_GAMING_MOUSE);
+}
+
+/* React to key presses */
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    /* Capture autoshift changes to sanely restore autoshift after dropping out of _GAME. */
+    if (keycode == AS_TOGG) {
+        desire_autoshift = get_autoshift_state();
+    }
+    return true;
 }
