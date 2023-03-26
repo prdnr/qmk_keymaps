@@ -1,7 +1,4 @@
 #include <nyquist/rev3/rev3.h> /* QMK_KEYBOARD_H caused problems with clangd */
-#include "action_layer.h"
-#include "color.h"
-#include "rgblight.h"
 
 /* Layer declarations. */
 enum layer_names { _QWERTY,_ARROWS, _QMK, _NUMPAD, _MOUSE, _FN };
