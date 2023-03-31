@@ -1,4 +1,4 @@
-# Link Top Optimization
+# Link Time Optimization
 EXTRAFLAGS += -flto
 
 # Combos - key chords
