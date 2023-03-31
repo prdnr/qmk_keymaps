@@ -239,7 +239,7 @@ void caps_word_set_user(bool active) {
     rgblight_set_layer_state(2, active);
 }
 
-/* Stores autoshift state outside of _GAME. */
+/* Stores autoshift state outside of _GAMING. */
 bool desire_autoshift = true;
 
 /* Act when layer state changes. */
@@ -298,7 +298,7 @@ void matrix_scan_user(void) {
 
 /* React to key presses */
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    /* Capture autoshift changes to sanely restore autoshift after dropping out of _GAME. */
+    /* Capture autoshift changes to sanely restore autoshift after dropping out of _GAMING. */
     if (keycode == AS_TOGG) {
         desire_autoshift = get_autoshift_state();
     }
