@@ -4,10 +4,26 @@
 enum layer_names { _QWERTY, _ARROWS, _QMK, _NUMPAD, _MOUSE, _FN, _GAMING, _GAMING_MOUSE };
 
 /* Combo declarations. */
-enum combos { QA, WS, ED, RF, TG, YH, UJ, IK, OL, PSEMICOLON, ENTERBACKSPACE, SEMICOLONENTER, PBACKSPACE, SLASHSHIFT, OP, LGUILCONTROL, SPACERCONTROL, DF, FG, HJ, JK, KM, BTNONEBTNTWO, WHEELUPWHEELDOWN, RECONERSTPPLYONE, DOWNUPRIGHT };
+/* clang-format off */
+enum combos { 
+    /* Top Row. */
+    QA, WS, ED, RF, TG,
+    /* split */
+    YH, UJ, IK, OL, PSEMICOLON,
+    /* Right Side. */
+    ENTERBACKSPACE, SEMICOLONENTER, PBACKSPACE, SLASHSHIFT, OP,
+    /* Space Area. */
+    LGUILCONTROL, SPACERCONTROL,
+    /* Quick Paren. */
+    DF, FG, HJ, JK,
+    /* Mouse. */
+    KM, BTNONEBTNTWO, WHEELUPWHEELDOWN,
+    /* Arrow Keys. */
+    RECONERSTPPLYONE, DOWNUPRIGHT };
+/* clang-format on */
 
-/* Combo Presses. */
-/* Top Row*/
+/* Combo presses. */
+/* Top Row. */
 const uint16_t PROGMEM qa_combo[] = {KC_Q, KC_A, COMBO_END};
 const uint16_t PROGMEM ws_combo[] = {KC_W, KC_S, COMBO_END};
 const uint16_t PROGMEM ed_combo[] = {KC_E, KC_D, COMBO_END};
@@ -20,59 +36,66 @@ const uint16_t PROGMEM ik_combo[]         = {KC_I, KC_K, COMBO_END};
 const uint16_t PROGMEM ol_combo[]         = {KC_O, KC_L, COMBO_END};
 const uint16_t PROGMEM psemicolon_combo[] = {KC_P, KC_SCLN, COMBO_END};
 
-/* Right Side*/
+/* Right Side. */
 const uint16_t PROGMEM enterbackspace_combo[] = {KC_ENT, KC_BSPC, COMBO_END};
 const uint16_t PROGMEM semicolonenter_combo[] = {KC_SCLN, KC_ENT, COMBO_END};
 const uint16_t PROGMEM pbackspace_combo[]     = {KC_P, KC_BSPC, COMBO_END};
 const uint16_t PROGMEM slashshift_combo[]     = {KC_SLSH, KC_RSFT, COMBO_END};
 const uint16_t PROGMEM op_combo[]             = {KC_O, KC_P, COMBO_END};
 
-/* Space Area */
+/* Space Area. */
 const uint16_t PROGMEM lguilcontrol_combo[]  = {KC_LGUI, KC_LCTL, COMBO_END};
 const uint16_t PROGMEM spacercontrol_combo[] = {KC_SPC, KC_RCTL, COMBO_END};
 
-/* Quick Parens */
+/* Quick Parens. */
 const uint16_t PROGMEM df_combo[] = {KC_D, KC_F, COMBO_END};
 const uint16_t PROGMEM fg_combo[] = {KC_F, KC_G, COMBO_END};
 const uint16_t PROGMEM hj_combo[] = {KC_H, KC_J, COMBO_END};
 const uint16_t PROGMEM jk_combo[] = {KC_J, KC_K, COMBO_END};
 
-/* Mouse */
+/* Mouse. */
 const uint16_t PROGMEM km_combo[]               = {KC_K, KC_M, COMBO_END};
 const uint16_t PROGMEM btnonebtntwo_combo[]     = {KC_MS_BTN1, KC_MS_BTN2, COMBO_END};
 const uint16_t PROGMEM wheelupwheeldown_combo[] = {KC_WH_U, KC_WH_D, COMBO_END};
 
-/* Arrow keys. */
+/* Arrow Keys. */
 const uint16_t PROGMEM reconerstpplyone_combo[] = {DM_REC1, DM_RSTP, DM_PLY1, COMBO_END};
 const uint16_t PROGMEM downupright_combo[]      = {KC_UP, KC_DOWN, KC_RIGHT, COMBO_END};
 
 /* Combo Results.*/
 /* clang-format off */
 combo_t key_combos[COMBO_COUNT] = {
+    /* Top Row. */
     [QA] = COMBO(qa_combo, KC_1),
     [WS] = COMBO(ws_combo, KC_2),
     [ED] = COMBO(ed_combo, KC_3),
     [RF] = COMBO(rf_combo, KC_4),
     [TG] = COMBO(tg_combo, KC_5),
+    /* split */
     [YH] = COMBO(yh_combo, KC_6),
     [UJ] = COMBO(uj_combo, KC_7),
     [IK] = COMBO(ik_combo, KC_8),
     [OL] = COMBO(ol_combo, KC_9),
     [PSEMICOLON] = COMBO(psemicolon_combo, KC_0),
+    /* Right Side. */
     [ENTERBACKSPACE] = COMBO(enterbackspace_combo, KC_DEL),
     [SEMICOLONENTER] = COMBO(semicolonenter_combo, KC_QUOTE),
     [PBACKSPACE] = COMBO(pbackspace_combo, KC_MINUS),
     [SLASHSHIFT] = COMBO(slashshift_combo, KC_EQUAL),
     [OP] = COMBO(op_combo, KC_BACKSLASH),
+    /* Space Area. */
     [LGUILCONTROL] = COMBO(lguilcontrol_combo, KC_SPACE),
     [SPACERCONTROL] = COMBO(spacercontrol_combo, KC_RALT),
+    /* Quick Parens. */
     [DF] = COMBO(df_combo, KC_LEFT_BRACKET),
     [FG] = COMBO(fg_combo, KC_LEFT_PAREN),
     [HJ] = COMBO(hj_combo, KC_RIGHT_PAREN),
     [JK] = COMBO(jk_combo, KC_RIGHT_BRACKET),
     [KM] = COMBO(km_combo, TG(_MOUSE)),
+    /* Mouse. */
     [BTNONEBTNTWO] = COMBO(btnonebtntwo_combo, KC_MS_BTN3),
     [WHEELUPWHEELDOWN] = COMBO(wheelupwheeldown_combo, KC_MS_BTN3),
+    /* Arrow Keys. */
     [RECONERSTPPLYONE] =COMBO(reconerstpplyone_combo, TG(_ARROWS)),
     [DOWNUPRIGHT] = COMBO(downupright_combo, TG(_ARROWS))
 };
