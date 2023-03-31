@@ -17,3 +17,6 @@ AUTO_SHIFT_ENABLE = yes
 
 # Dynamic Macros - record and replay keystrokes
 DYNAMIC_MACRO_ENABLE = yes
+
+# Disable backlighting (pcb supports it but there are no LEDs).
+BACKLIGHT_ENABLE = no
