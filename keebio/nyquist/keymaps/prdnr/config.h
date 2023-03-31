@@ -25,4 +25,4 @@
 #define TAPPING_TERM 300
 
 #define COMBO_SHOULD_TRIGGER
-#define COMBO_COUNT 26
+#define COMBO_COUNT 28

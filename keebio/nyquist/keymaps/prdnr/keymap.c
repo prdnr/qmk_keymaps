@@ -19,7 +19,10 @@ enum combos {
     /* Mouse. */
     KM, BTNONEBTNTWO, WHEELUPWHEELDOWN,
     /* Arrow Keys. */
-    RECONERSTPPLYONE, DOWNUPRIGHT };
+    RECONERSTPPLYONE, DOWNUPRIGHT,
+    /* Numpad. */
+    KEYPADMINUSKEYPADPLUS, KEYPADPLUSKEPADEQUAL
+};
 /* clang-format on */
 
 /* Combo presses. */
@@ -62,6 +65,10 @@ const uint16_t PROGMEM wheelupwheeldown_combo[] = {KC_WH_U, KC_WH_D, COMBO_END};
 const uint16_t PROGMEM reconerstpplyone_combo[] = {DM_REC1, DM_RSTP, DM_PLY1, COMBO_END};
 const uint16_t PROGMEM downupright_combo[]      = {KC_UP, KC_DOWN, KC_RIGHT, COMBO_END};
 
+/* Numpad. */
+const uint16_t PROGMEM keypadminskeypadplus_combo[] = {KC_PMNS, KC_PPLS, COMBO_END};
+const uint16_t PROGMEM keypadpluskeypadequal_combo[] = {KC_PPLS, KC_PEQL, COMBO_END};
+
 /* Combo Results.*/
 /* clang-format off */
 combo_t key_combos[COMBO_COUNT] = {
@@ -97,7 +104,10 @@ combo_t key_combos[COMBO_COUNT] = {
     [WHEELUPWHEELDOWN] = COMBO(wheelupwheeldown_combo, KC_MS_BTN3),
     /* Arrow Keys. */
     [RECONERSTPPLYONE] =COMBO(reconerstpplyone_combo, TG(_ARROWS)),
-    [DOWNUPRIGHT] = COMBO(downupright_combo, TG(_ARROWS))
+    [DOWNUPRIGHT] = COMBO(downupright_combo, TG(_ARROWS)),
+    /* Numpad. */
+    [KEYPADMINUSKEYPADPLUS] = COMBO(keypadminskeypadplus_combo, KC_PAST),
+    [KEYPADPLUSKEPADEQUAL] = COMBO(keypadpluskeypadequal_combo, KC_PSLS)
 };
 /* clang-format on */
 
@@ -165,8 +175,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         DM_PLY1, DM_PLY2 , DM_RSTP, DM_REC1, DM_REC2, XXXXXXX, /*split*/ _______, _______, _______, _______, _______, _______),
 
     [_NUMPAD] = LAYOUT_ortho_4x12(
-        _______, _______, _______, _______, _______, _______, /*split*/ XXXXXXX, KC_7, KC_8, KC_9, KC_PMNS, KC_PAST,
-        TG(_NUMPAD), _______, _______, _______, _______, _______, /*split*/ XXXXXXX, KC_4, KC_5, KC_6, KC_PPLS, KC_PSLS,
+        _______, _______, _______, _______, _______, _______, /*split*/ XXXXXXX, KC_7, KC_8, KC_9, KC_PMNS, _______,
+        TG(_NUMPAD), _______, _______, _______, _______, _______, /*split*/ XXXXXXX, KC_4, KC_5, KC_6, KC_PPLS, _______,
         _______, _______, _______, _______, _______, _______, /*split*/ XXXXXXX, KC_1, KC_2, KC_3, KC_PEQL, XXXXXXX,
         _______, _______, _______, _______, _______, _______, /*split*/ KC_0, KC_0, KC_0, KC_PDOT, KC_PENT, XXXXXXX),
 
