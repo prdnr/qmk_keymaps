@@ -66,7 +66,7 @@ const uint16_t PROGMEM reconerstpplyone_combo[] = {DM_REC1, DM_RSTP, DM_PLY1, CO
 const uint16_t PROGMEM downupright_combo[]      = {KC_UP, KC_DOWN, KC_RIGHT, COMBO_END};
 
 /* Numpad. */
-const uint16_t PROGMEM keypadminskeypadplus_combo[] = {KC_PMNS, KC_PPLS, COMBO_END};
+const uint16_t PROGMEM keypadminskeypadplus_combo[]  = {KC_PMNS, KC_PPLS, COMBO_END};
 const uint16_t PROGMEM keypadpluskeypadequal_combo[] = {KC_PPLS, KC_PEQL, COMBO_END};
 
 /* Combo Results.*/
@@ -129,24 +129,89 @@ bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode
     return true;
 }
 
-/* Tap Dance declarations. */
-enum { TD_ESC_TAB, TD_NUMPAD_QMK };
+/* Enumerate the desired tapdance states to react to. */
+/* clang-format off */
+typedef enum { 
+    TD_NONE,
+    TD_SINGLE_TAP,
+    TD_SINGLE_HOLD,
+    TD_SINGLE_TAP_HOLD,
+    TD_DOUBLE_TAP
+} td_state_t;
+/* clang-format on */
 
-/* Turn on _NUMPAD layer on first tap, _QMK layer on all others. */
-void dance_numpad_qmk_layers(tap_dance_state_t *state, void *user_data) {
-    if (state->count == 1) {
-        // Numpad layer
-        layer_on(_NUMPAD);
-    } else {
-        // QMK layer
-        layer_on(_QMK);
+/* Tap Dance data struct. */
+typedef struct {
+    bool       is_press_action;
+    td_state_t state;
+} td_tap_t;
+
+/* Return the input type of the current Tap Dance. */
+td_state_t tap_dance_input(tap_dance_state_t *state) {
+    switch (state->count) {
+        case 1:
+            if (!state->pressed)
+                return TD_SINGLE_TAP;
+            else
+                return TD_SINGLE_HOLD;
+        case 2:
+            if (!state->pressed)
+                return TD_DOUBLE_TAP;
+            else
+                return TD_SINGLE_TAP_HOLD;
+        default:
+            return TD_NONE;
     }
 }
 
+/* A place to store the dance state inside the numpad_qmk_dance_* functions. */
+static td_tap_t numpad_qmk_dance_state = {.is_press_action = false, .state = TD_NONE};
+
+/* Act at the end of the Tap Dance key presses.
+   If the final action of the dance is a hold, the release will be reacted
+   to in the reset function. */
+void numpad_qmk_dance_finished(tap_dance_state_t *state, void *user_data) {
+    numpad_qmk_dance_state.state = tap_dance_input(state);
+
+    switch (numpad_qmk_dance_state.state) {
+        case TD_SINGLE_TAP: /* Once for _NUMPAD. */
+            layer_invert(_NUMPAD);
+            break;
+        case TD_SINGLE_HOLD:
+            layer_on(_NUMPAD);
+            break;
+        case TD_DOUBLE_TAP: /* Twice for _QMK. */
+            layer_invert(_QMK);
+            break;
+        default:
+            break;
+    }
+}
+
+/* React to the final key press being released. */
+void numpad_qmk_dance_reset(tap_dance_state_t *state, void *user_data) {
+    switch (numpad_qmk_dance_state.state) {
+        case TD_SINGLE_HOLD:
+            layer_off(_NUMPAD);
+        default:
+            break;
+    }
+
+    /* Reset the state for next use. */
+    numpad_qmk_dance_state.state = TD_NONE;
+}
+
+/* Tap Dance declarations. */
+enum { TD_ESC_TAB, TD_NUMPAD_QMK };
+
 /* Tap Dance definitions. */
-tap_dance_action_t tap_dance_actions[] = {[TD_ESC_TAB] = ACTION_TAP_DANCE_DOUBLE(KC_ESC, KC_TAB), [TD_NUMPAD_QMK] = ACTION_TAP_DANCE_FN(dance_numpad_qmk_layers)
+/* clang-format off */
+tap_dance_action_t tap_dance_actions[] = {
+    [TD_ESC_TAB] = ACTION_TAP_DANCE_DOUBLE(KC_ESC, KC_TAB),
+    [TD_NUMPAD_QMK] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, numpad_qmk_dance_finished, numpad_qmk_dance_reset)
 
 };
+/* clang-format on */
 
 /* Keymap definitions.
  *
@@ -170,13 +235,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_QMK] = LAYOUT_ortho_4x12(
         KC_SLEP, KC_BRID, KC_BRIU, KC_KB_MUTE, KC_KB_VOLUME_DOWN, KC_KB_VOLUME_UP, /*split*/ _______, _______, _______, _______, _______, _______,
-        TG(_QMK), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, TO(_GAMING), /*split*/ _______, _______, _______, _______, _______, _______,
+        _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, TO(_GAMING), /*split*/ _______, _______, _______, _______, _______, _______,
         AS_TOGG, XXXXXXX, RGB_TOG, XXXXXXX, XXXXXXX, XXXXXXX, /*split*/ _______, _______, _______, _______, _______, _______,
         DM_PLY1, DM_PLY2 , DM_RSTP, DM_REC1, DM_REC2, XXXXXXX, /*split*/ _______, _______, _______, _______, _______, _______),
 
     [_NUMPAD] = LAYOUT_ortho_4x12(
         _______, _______, _______, _______, _______, _______, /*split*/ XXXXXXX, KC_7, KC_8, KC_9, KC_PMNS, _______,
-        TG(_NUMPAD), _______, _______, _______, _______, _______, /*split*/ XXXXXXX, KC_4, KC_5, KC_6, KC_PPLS, _______,
+        _______, _______, _______, _______, _______, _______, /*split*/ XXXXXXX, KC_4, KC_5, KC_6, KC_PPLS, _______,
         _______, _______, _______, _______, _______, _______, /*split*/ XXXXXXX, KC_1, KC_2, KC_3, KC_PEQL, XXXXXXX,
         _______, _______, _______, _______, _______, _______, /*split*/ KC_0, KC_0, KC_0, KC_PDOT, KC_PENT, XXXXXXX),
 
