@@ -25,3 +25,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 /* clang-format on */
+
+/* Setup after the keyboard has been initalized. */
+void keyboard_post_init_user(void) {
+    /* Default to having autoshift on. */
+    autoshift_enable();
+}
