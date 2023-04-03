@@ -1,18 +1,19 @@
 #include <adb_usb/adb_usb.h> /* QMK_KEYBOARD_H caused problems with clangd */
-#include "action_layer.h"
 
 /* Layer declarations. */
 enum layer_names { _STOCK, _QWERTY };
 
 /* Combo declarations. */
-enum combos { ASM };
+enum combos { ASM, CW };
 
 /* Combo presses. */
 const uint16_t PROGMEM asm_combo[] = {KC_A, KC_S, KC_M, COMBO_END};
+const uint16_t PROGMEM cw_combo[] = {KC_C, KC_W, COMBO_END};
 
 /* Combo results. */
 combo_t key_combos[COMBO_COUNT] = {
     [ASM] = COMBO(asm_combo, AS_TOGG),
+    [CW] = COMBO(cw_combo, CW_TOGG),
 };
 
 /* clang-format off */

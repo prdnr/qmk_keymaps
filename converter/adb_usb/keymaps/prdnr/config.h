@@ -1,4 +1,6 @@
 #define AUTO_SHIFT_REPEAT
 
-#define COMBO_COUNT 1
+#define COMBO_COUNT 2
 #define COMBO_SHOULD_TRIGGER
+
+#define TAPPING_TERM 175
